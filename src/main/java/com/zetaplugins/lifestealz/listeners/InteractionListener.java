@@ -12,7 +12,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitRunnable;
 import com.zetaplugins.lifestealz.LifeStealZ;
 import com.zetaplugins.lifestealz.util.customitems.CustomItemType;
 import com.zetaplugins.lifestealz.util.customitems.customitemdata.CustomHeartItemData;
@@ -246,14 +245,11 @@ public final class InteractionListener implements Listener {
 
         player.getInventory().setItemInOffHand(fakeTotem);
         // if you dont do a delay, it appears to use default texture
-        new BukkitRunnable() {
-            @Override
-            public void run() {
+        player.getScheduler().runDelayed(plugin, scheduledTask -> {
                 // Play the totem animation
                 player.playEffect(EntityEffect.PROTECTED_FROM_DEATH);
                 player.getInventory().setItemInOffHand(originalOffHandItem);
-            }
-        }.runTaskLater(plugin, 3L);
+        }, null, 3L);
 
     }
 

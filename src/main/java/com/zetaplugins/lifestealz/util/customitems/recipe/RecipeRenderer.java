@@ -11,13 +11,14 @@ import com.zetaplugins.lifestealz.util.GuiManager;
 import com.zetaplugins.lifestealz.util.MessageUtils;
 import com.zetaplugins.lifestealz.util.customitems.CustomItem;
 import com.zetaplugins.lifestealz.util.customitems.CustomItemManager;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 final class RecipeRenderer {
     private final LifeStealZ plugin;
-    private final Map<Inventory, List<Integer>> animationMap = new HashMap<>();
+    private final Map<Inventory, List<ScheduledTask>> animationMap = new HashMap<>();
 
     public RecipeRenderer(LifeStealZ plugin) {
         this.plugin = plugin;
@@ -28,9 +29,9 @@ final class RecipeRenderer {
      * @param inventory The inventory to save the animation for
      * @param taskId The task id of the animation
      */
-    private void addAnimation(Inventory inventory, int taskId) {
-        if (animationMap.containsKey(inventory)) animationMap.get(inventory).add(taskId);
-        else animationMap.put(inventory, new ArrayList<>(Collections.singletonList(taskId)));
+    private void addAnimation(Inventory inventory, ScheduledTask task) {
+        if (animationMap.containsKey(inventory)) animationMap.get(inventory).add(task);
+        else animationMap.put(inventory, new ArrayList<>(Collections.singletonList(task)));
     }
 
     /**
@@ -39,8 +40,8 @@ final class RecipeRenderer {
      */
     public void cancelAnimations(Inventory inventory) {
         if (animationMap.containsKey(inventory)) {
-            for (int taskId : animationMap.get(inventory)) {
-                Bukkit.getScheduler().cancelTask(taskId);
+            for (ScheduledTask task : animationMap.get(inventory)) {
+                task.cancel();
             }
             animationMap.remove(inventory);
         }
@@ -152,28 +153,28 @@ final class RecipeRenderer {
             inventory.setItem(slot, glass);
         }
 
-        renderIngredient(inventory, 10, rowOne.get(0));
-        renderIngredient(inventory, 11, rowOne.get(1));
-        renderIngredient(inventory, 12, rowOne.get(2));
-        renderIngredient(inventory, 19, rowTwo.get(0));
-        renderIngredient(inventory, 20, rowTwo.get(1));
-        renderIngredient(inventory, 21, rowTwo.get(2));
-        renderIngredient(inventory, 28, rowThree.get(0));
-        renderIngredient(inventory, 29, rowThree.get(1));
-        renderIngredient(inventory, 30, rowThree.get(2));
+        renderIngredient(player, inventory, 10, rowOne.get(0));
+        renderIngredient(player, inventory, 11, rowOne.get(1));
+        renderIngredient(player, inventory, 12, rowOne.get(2));
+        renderIngredient(player, inventory, 19, rowTwo.get(0));
+        renderIngredient(player, inventory, 20, rowTwo.get(1));
+        renderIngredient(player, inventory, 21, rowTwo.get(2));
+        renderIngredient(player, inventory, 28, rowThree.get(0));
+        renderIngredient(player, inventory, 29, rowThree.get(1));
+        renderIngredient(player, inventory, 30, rowThree.get(2));
         inventory.setItem(24,new CustomItem(CustomItemManager.createCustomItem(itemId)).makeForbidden().getItemStack());
 
         GuiManager.RECIPE_GUI_MAP.put(player.getUniqueId(), inventory);
         player.openInventory(inventory);
     }
 
-    private void renderIngredient(Inventory inventory, int slot, String material) {
+    private void renderIngredient(Player player, Inventory inventory, int slot, String material) {
         if (material == null || material.equalsIgnoreCase("AIR") || material.equalsIgnoreCase("empty")) return;
 
         if (material.startsWith("#") && tagFromString(material.substring(1)) != null) {
             Tag<Material> tag = tagFromString(material.substring(1).toLowerCase());
             Set<Material> materials = tag.getValues();
-            startTagAnimation(inventory, slot, materials);
+            startTagAnimation(player, inventory, slot, materials);
             return;
         }
 
@@ -196,7 +197,7 @@ final class RecipeRenderer {
         else return Bukkit.getTag("items", NamespacedKey.minecraft(tagName), Material.class);
     }
 
-    private void startTagAnimation(Inventory inventory, int slot, Set<Material> materials) {
+    private void startTagAnimation(Player player, Inventory inventory, int slot, Set<Material> materials) {
         List<Material> materialList = new ArrayList<>(materials);
         AtomicReference<Integer> index = new AtomicReference<>(0);
 
@@ -210,17 +211,17 @@ final class RecipeRenderer {
             index.set((currentIndex + 1) % materialList.size());
         };
 
-        int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, runnable, 0L, 20L);
+        ScheduledTask task = player.getScheduler().runAtFixedRate(plugin, scheduledTask -> runnable.run(), null, 1L, 20L);
 
-        if (taskId == -1) return;
+        if (task == null) return;
 
-        addAnimation(inventory, taskId);
+        addAnimation(inventory, task);
 
         // Cancel the task after 30 seconds
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            Bukkit.getScheduler().cancelTask(taskId);
+        player.getScheduler().runDelayed(plugin, scheduledTask -> {
+            task.cancel();
             if (inventory != null) inventory.setItem(slot, new CustomItem(materialList.get(0)).makeForbidden().getItemStack());
-        }, 20 * 30);
+        }, null, 20 * 30);
     }
 
     private Set<String> getItemIds() {
