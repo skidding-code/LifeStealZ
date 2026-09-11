@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '25'
           cache: 'maven'
 
       - name: Get release version
@@ -72,6 +72,7 @@ jobs:
           changelog: ${{ github.event.release.body }}
           files: '["target/lifestealz-${{ github.event.release.tag_name }}.jar"]'
           loaders: |-
+            folia
             paper
             purpur
           game-versions: |-
