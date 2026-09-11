@@ -2,9 +2,9 @@ package com.zetaplugins.lifestealz.util.revive;
 
 import org.bukkit.Location;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Manages beacon revive tasks
@@ -13,7 +13,7 @@ public class ReviveTaskManager {
     private final Map<Location, ReviveTask> reviveTasks;
 
     public ReviveTaskManager() {
-        this.reviveTasks = new HashMap<>();
+        this.reviveTasks = new ConcurrentHashMap<>();
     }
 
     /**

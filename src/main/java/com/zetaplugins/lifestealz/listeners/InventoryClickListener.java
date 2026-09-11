@@ -16,8 +16,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import com.zetaplugins.lifestealz.LifeStealZ;
 import com.zetaplugins.lifestealz.util.commands.CommandUtils;
 import com.zetaplugins.lifestealz.util.customblocks.CustomBlock;
@@ -353,9 +352,7 @@ public final class InventoryClickListener implements Listener {
                 itemData.getReviveTime()
         );
 
-        BukkitTask reviveTask = new BukkitRunnable() {
-            @Override
-            public void run() {
+        ScheduledTask reviveTask = Bukkit.getRegionScheduler().runDelayed(plugin, beaconLocation, scheduledTask -> {
                 applyReviveData(data);
                 executeReviveActions(reviver, target, location);
 
@@ -364,8 +361,7 @@ public final class InventoryClickListener implements Listener {
                 plugin.getReviveBeaconEffectManager().clearAllEffects(beaconLocation);
                 beaconLocation.getBlock().setType(Material.AIR);
                 beaconLocation.getWorld().playSound(beaconLocation, Sound.ENTITY_PLAYER_LEVELUP, 500.0f, 1.0f);
-            }
-        }.runTaskLater(plugin, itemData.getReviveTime() * 20L);
+        }, itemData.getReviveTime() * 20L);
 
         plugin.getReviveTaskManager().addReviveTask(beaconLocation, new ReviveTask(
                 beaconLocation,

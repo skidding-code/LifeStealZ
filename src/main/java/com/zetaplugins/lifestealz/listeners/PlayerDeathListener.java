@@ -281,7 +281,7 @@ public final class PlayerDeathListener implements Listener {
         if (!eliminationEvent.isCancelled()) {
             // Execute elimination commands
             final List<String> elimCommands = plugin.getConfig().getStringList("eliminationCommands");
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            Bukkit.getGlobalRegionScheduler().runDelayed(plugin, scheduledTask -> {
                 for (String command : elimCommands) {
                     plugin.getServer().dispatchCommand(
                             plugin.getServer().getConsoleSender(),
@@ -328,11 +328,11 @@ public final class PlayerDeathListener implements Listener {
             }
 
             // Kick the player
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            player.getScheduler().runDelayed(plugin, scheduledTask -> {
                 if (player.isOnline()) { // Avoids trying to kick NPCs since they are not online
                     player.kick(eliminationEvent.getKickMessage());
                 }
-            }, 1L);
+            }, null, 1L);
 
             // Announce elimination
             if (eliminationEvent.isShouldAnnounceElimination()) {

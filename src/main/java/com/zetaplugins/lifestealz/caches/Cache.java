@@ -2,8 +2,8 @@ package com.zetaplugins.lifestealz.caches;
 
 import com.zetaplugins.lifestealz.LifeStealZ;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class Cache<T> {
     private final Set<T> cachedData;
@@ -11,7 +11,7 @@ public abstract class Cache<T> {
 
     public Cache(LifeStealZ plugin) {
         this.plugin = plugin;
-        this.cachedData = new HashSet<>();
+        this.cachedData = ConcurrentHashMap.newKeySet();
         reloadCache();
     }
 
@@ -24,7 +24,7 @@ public abstract class Cache<T> {
      * Get a set of all cached data
      */
     public Set<T> getCachedData() {
-        return new HashSet<>(cachedData);
+        return Set.copyOf(cachedData);
     }
 
     /**

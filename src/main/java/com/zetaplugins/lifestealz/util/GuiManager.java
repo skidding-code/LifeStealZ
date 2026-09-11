@@ -11,16 +11,16 @@ import com.zetaplugins.lifestealz.LifeStealZ;
 import com.zetaplugins.lifestealz.util.customitems.CustomItem;
 import com.zetaplugins.lifestealz.util.customitems.CustomItemManager;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 public final class GuiManager {
-    public static Map<UUID, Inventory> REVIVE_GUI_MAP = new HashMap<>();
-    public static Map<UUID, Inventory> REVIVE_BEACON_GUI_MAP = new HashMap<>();
-    public static Map<UUID, Inventory> RECIPE_GUI_MAP = new HashMap<>();
-    public static Map<UUID, Location> REVIVE_BEACON_INVENTORY_LOCATIONS = new HashMap<>();
+    public static Map<UUID, Inventory> REVIVE_GUI_MAP = new ConcurrentHashMap<>();
+    public static Map<UUID, Inventory> REVIVE_BEACON_GUI_MAP = new ConcurrentHashMap<>();
+    public static Map<UUID, Inventory> RECIPE_GUI_MAP = new ConcurrentHashMap<>();
+    public static Map<UUID, Location> REVIVE_BEACON_INVENTORY_LOCATIONS = new ConcurrentHashMap<>();
 
     private GuiManager() {}
 
