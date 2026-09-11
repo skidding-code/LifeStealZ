@@ -1,21 +1,21 @@
 package com.zetaplugins.lifestealz.util;
 
-import org.bukkit.scheduler.BukkitTask;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Manages all running async tasks
  */
 public final class AsyncTaskManager {
-    private final List<BukkitTask> runningTasks = new ArrayList<>();
+    private final List<ScheduledTask> runningTasks = new CopyOnWriteArrayList<>();
 
     /**
      * Add a task to the list of running tasks
      * @param task The task to add
      */
-    public void addTask(BukkitTask task) {
+    public void addTask(ScheduledTask task) {
         runningTasks.add(task);
     }
 
@@ -23,7 +23,7 @@ public final class AsyncTaskManager {
      * Cancel all running tasks
      */
     public void cancelAllTasks() {
-        for (BukkitTask task : runningTasks) {
+        for (ScheduledTask task : runningTasks) {
             if (task.isCancelled()) continue;
             task.cancel();
         }

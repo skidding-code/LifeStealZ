@@ -4,7 +4,6 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import com.zetaplugins.lifestealz.LifeStealZ;
 import com.zetaplugins.lifestealz.storage.PlayerData;
 
@@ -81,12 +80,7 @@ public final class GracePeriodManager {
         // Duration in ticks: 20 ticks = 1 second
         final long gracePeriodDuration = (long) getConfig().getDuration() * 20;
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                endGracePeriod(player);
-            }
-        }.runTaskLater(plugin, gracePeriodDuration);
+        player.getScheduler().runDelayed(plugin, scheduledTask -> endGracePeriod(player), null, gracePeriodDuration);
     }
 
     /**

@@ -1,7 +1,7 @@
 package com.zetaplugins.lifestealz.commands.MainCommand.subcommands;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.scheduler.BukkitTask;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import com.zetaplugins.lifestealz.LifeStealZ;
 import com.zetaplugins.lifestealz.commands.SubCommand;
 import com.zetaplugins.lifestealz.util.MessageUtils;
@@ -50,7 +50,7 @@ public final class DataSubCommand implements SubCommand {
                 "exportingData",
                 "&7Exporting player data..."
         ));
-        BukkitTask task = plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+        ScheduledTask task = plugin.getServer().getAsyncScheduler().runNow(plugin, scheduledTask -> {
             String filePath = storage.export(fileName);
             if (filePath != null) {
                 sender.sendMessage(MessageUtils.getAndFormatMsg(
@@ -77,7 +77,7 @@ public final class DataSubCommand implements SubCommand {
                 "importingData",
                 "&7Importing player data..."
         ));
-        BukkitTask task = plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+        ScheduledTask task = plugin.getServer().getAsyncScheduler().runNow(plugin, scheduledTask -> {
             storage.importData(fileName);
             sender.sendMessage(MessageUtils.getAndFormatMsg(
                     true,

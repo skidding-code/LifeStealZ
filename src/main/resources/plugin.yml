@@ -1,7 +1,8 @@
 name: LifeStealZ
 version: '${project.version}'
 main: com.zetaplugins.lifestealz.LifeStealZ
-api-version: '1.19'
+api-version: '26.2'
+folia-supported: true
 author: Kartoffelchipss
 website: https://zetaplugins.com/
 description: The Ultimate LifeSteal SMP Plugin!
